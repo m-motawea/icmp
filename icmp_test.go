@@ -29,7 +29,7 @@ func TestICMP(t *testing.T) {
 		t.Errorf("two headers are not equal. i:\n%+v\ni2:\n%+v\n", i, i2)
 	}
 
-	if i.Code == CODE_ICMP_ECHO_REPQUEST {
+	if i.Type == TYPE_ICMP_ECHO_REPQUEST {
 		e := EchoRestOfHeader{}
 		err = e.UnmarshalBinary(i.RestOfHeader)
 		if err != nil {

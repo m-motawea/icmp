@@ -9,8 +9,8 @@ type Identifier uint16
 type SequenceNumber uint16
 
 const (
-	CODE_ICMP_ECHO_REPLY    Code = 0
-	CODE_ICMP_ECHO_REPQUEST Code = 8
+	TYPE_ICMP_ECHO_REPLY    Type = 0
+	TYPE_ICMP_ECHO_REPQUEST Type = 8
 )
 
 type EchoRestOfHeader struct {
@@ -21,7 +21,7 @@ type EchoRestOfHeader struct {
 func (e *EchoRestOfHeader) MarshalBinary() ([]byte, error) {
 	b := make([]byte, 4)
 	binary.BigEndian.PutUint16(b[0:2], uint16(e.Identifier))
-	binary.BigEndian.PutUint16(b[0:4], uint16(e.SequenceNumber))
+	binary.BigEndian.PutUint16(b[2:4], uint16(e.SequenceNumber))
 	return b, nil
 }
 
