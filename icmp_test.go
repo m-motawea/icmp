@@ -1,0 +1,47 @@
+package icmp
+
+import (
+	"bytes"
+	"reflect"
+	"testing"
+)
+
+func TestICMP(t *testing.T) {
+	i := ICMP{
+		Type:         8,
+		Code:         0,
+		RestOfHeader: []byte{0x00, 0x01, 0x00, 0x007},
+		Data: []byte{
+			0x64, 0x8c, 0xcd, 0x5e, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x10, 0x7d, 0x23, 0x0b, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+			0x00, 0x20, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
+			0x00, 0x30, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+		},
+	}
+	b, err := i.MarshalBinary()
+	if err != nil {
+		t.Errorf("Failed to Marshal header due to error %v", err)
+	}
+
+	i2 := ICMP{}
+	i2.UnmarshalBinary(b)
+	if !reflect.DeepEqual(i, i2) {
+		t.Errorf("two headers are not equal. i:\n%+v\ni2:\n%+v\n", i, i2)
+	}
+
+	if i.Code == CODE_ICMP_ECHO_REPQUEST {
+		e := EchoRestOfHeader{}
+		err = e.UnmarshalBinary(i.RestOfHeader)
+		if err != nil {
+			t.Errorf("Failed to unmarshal rest of header due to error %v", err)
+		}
+		b, err = e.MarshalBinary()
+		if err != nil {
+			t.Errorf("Failed to marshal rest of header due to error %v", err)
+		}
+		if !bytes.Equal(b, i.RestOfHeader) {
+			t.Errorf("result is not correct\n marshal result:\n%v\nactual:\n%v\n", b, i.RestOfHeader)
+		}
+	}
+
+}
